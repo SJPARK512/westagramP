@@ -88,4 +88,6 @@ class LoginView(View):
         if not Account.objects.filter(email=email, password=password):
             return JsonResponse({"message": "INVALID_USER"}, status=401)
 
-        return JsonResponse({"message": "SUCCESS"}, status=401)
+        return JsonResponse({"message": "SUCCESS"}, status=201)
+
+
