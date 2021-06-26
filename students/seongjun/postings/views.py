@@ -2,9 +2,8 @@ import json
 
 from django.http import JsonResponse
 from django.views import View
-from django.db.models import
 from user.models import Account
-from .models import Posting
+from postings.models import Posting
 
 
 # Create your views here.
@@ -33,7 +32,7 @@ class PostingView(View):
         postings    = Posting.objects.all()
 
         for posting in postings:
-            account = Posting.accounts_set.all()
+            account = posting.user
 
             results.append({
                 'name'          : account.nick_name,
