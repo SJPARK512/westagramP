@@ -3,12 +3,11 @@ import json
 
 from django.http import JsonResponse
 from django.views import View
-from django.db  import IntegrityError
+from django.db import IntegrityError
 # from django.core.validators import validate_email
 # from django.core.exceptions import ValidationError
 from user.models import Account
 from user.validators import validate_email, validate_password, validate_phone_number
-
 
 
 # Create your views here.
@@ -17,9 +16,9 @@ from user.validators import validate_email, validate_password, validate_phone_nu
 class SignUpView(View):
     def post(self, request):
         data = json.loads(request.body)
-       # email_regex = re.compile(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
-       # phone_regex = re.compile(r'^01([0|1]?)-?([0-9]{3,4})-?([0-9]{4})$')
-       # password_regex = re.compile(r'^[a-zA-Z0-9!@#$%^&*()_+,./<>?;:`~]{8,}$')
+        # email_regex = re.compile(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+        # phone_regex = re.compile(r'^01([0|1]?)-?([0-9]{3,4})-?([0-9]{4})$')
+        # password_regex = re.compile(r'^[a-zA-Z0-9!@#$%^&*()_+,./<>?;:`~]{8,}$')
 
         try:
 
@@ -27,10 +26,10 @@ class SignUpView(View):
                 return JsonResponse({"message": "이메일 형식을 맞추어주세요"}, status=400)
             if not validate_password(data['password']):
                 return JsonResponse({'message': 'Password 8자~20자까지 가능합니다. '}, status=400)
-            if validate_phone_number(data['phone_number']) ==0:
+            if validate_phone_number(data['phone_number']) == 0:
                 return JsonResponse({'message': '잘못된 형식의 번호입니다.'}, status=400)
             else:
-                data['phone_number']=validate_phone_number(data['phone_number'])
+                data['phone_number'] = validate_phone_number(data['phone_number'])
             # if not validate_phone_number(data['phone_number']):
             #    return JsonResponse({'message': '잘못된 형식의 번호입니다.'}, status=400)
             if len(data['nick_name']) < 4 or len(data['nick_name']) > 12:
@@ -59,10 +58,9 @@ class SignUpView(View):
         # except ValidationError:
         #    return JsonResponse({"message": "VALIDATION_ERROR"}, status=400)
         except KeyError:
-            return JsonResponse({"message" : "key_error"}, status=400)
+            return JsonResponse({"message": "key_error"}, status=400)
         except IntegrityError:
-            return JsonResponse({"message" : "IntegrityError"}, status=400)
-
+            return JsonResponse({"message": "IntegrityError"}, status=400)
 
     def get(self, request):
         results = []
@@ -70,10 +68,10 @@ class SignUpView(View):
 
         for account in accounts:
             results.append({
-                "email" : account.email,
-                "password" : account.password,
-                "nick_name" : account.nick_name,
-                "phone_number" : account.phone_number,
+                "email": account.email,
+                "password": account.password,
+                "nick_name": account.nick_name,
+                "phone_number": account.phone_number,
 
             })
         return JsonResponse({'results': results}, status=200)
@@ -82,3 +80,12 @@ class SignUpView(View):
 class LoginView(View):
     def post(self, request):
         data = json.loads(request.body)
+        email = data['email']
+        password = data['password']
+
+        if email and password:
+            return JsonResponse({"message": "KEY_ERROR"}, status=400)
+        if not Account.objects.filter(email=email, password=password):
+            return JsonResponse({"message": "INVALID_USER"}, status=401)
+
+        return JsonResponse({"message": "SUCCESS"}, status=401)
